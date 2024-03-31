@@ -15,6 +15,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+body {
+  @apply duration-300 overflow-x-hidden;
+}
+
 .animateScale {
   animation: Scales 0.3s;
 }
@@ -25,5 +29,44 @@
   }
   30% {
     scale: 1.1;
+  }
+}
+
+.animateScale span {
+  animation: rotate 0.3s;
+}
+
+@keyframes rotate {
+  0% {
+    @apply rotate-12;
+  }
+  30% {
+    @apply rotate-0;
+  }
+}
+
+.shakeScreen {
+  animation: shakeScreen 0.2s;
+}
+
+@keyframes shakeScreen {
+  0% {
+    @apply translate-x-1;
+  }
+  30% {
+    @apply -translate-x-1;
+  }
+}
+
+.modalFade {
+  animation: modalFade 0.35s;
+}
+
+@keyframes modalFade {
+  0% {
+    transform: scale(0.5);
+  }
+  100% {
+    transform: scale(1);
   }
 }

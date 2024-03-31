@@ -13,20 +13,20 @@ const WordleBox: React.FC<Wordle> = ({ word, className, index }) => {
         return (
           <div
             key={i}
-            className={`hover:bg-opacity-30  duration-200 grid place-content-center min-w-[70px] h-16 text-3xl font-bold uppercase  bg-[#3a3a3c] ${
-              word[i] && "bg-opacity-60 animateScale"
+            className={`hover:bg-opacity-30  duration-200 grid place-content-center min-w-[70px] h-16 text-3xl font-bold uppercase  bg-[#242424] ${
+              word[i] && "bg-opacity-60 animateScale border border-[#111010]"
             } ${
               className && className[index] && className[index][i] === 1
-                ? "bg-green-400"
+                ? "!bg-green-400"
                 : className && className[index] && className[index][i] === 2
-                ? "bg-orange-300"
+                ? "!bg-orange-300"
                 : className &&
                   className[index] &&
                   className[index][i] === 0 &&
-                  "bg-neutral-800"
+                  "!bg-neutral-900"
             }`}
           >
-            {word[i]}
+            <span> {word[i]}</span>
           </div>
         );
       })}

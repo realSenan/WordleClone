@@ -3,9 +3,14 @@ import PageContainer from "./components/containers/PageContainer";
 import WordleBox from "./components/WordleBox";
 import Celebrate from "./components/modals/Celebrate";
 import Lose from "./components/modals/Lose";
+import { words } from "./data/words";
+import toast, { Toaster } from "react-hot-toast";
 
 function App() {
-  const word: string = "senan";
+  const [wordIndex, setWordIndex] = useState<number>(
+    Math.floor(Math.random() * words.length)
+  );
+  const word: string = words[wordIndex];
   const [userWord, setUserWord] = useState<Array<string>>([]);
   const [allWord, setAllWord] = useState<Array<Array<string>>>([]);
   const [className, setClassName] = useState<Array<Array<number>>>([]);
@@ -13,6 +18,10 @@ function App() {
     win: false,
     lose: false,
   });
+
+  const checkWordInList = useCallback(() => {
+    return words.find((item) => item == userWord.join(""));
+  }, [userWord]);
 
   const classHandler = useCallback(() => {
     const result: number[] = [];
@@ -50,19 +59,25 @@ function App() {
 
       if (e.key == "Enter" || e.key == " ") {
         if (userWord.length == 5) {
-          setTimeout(() => {
-            if (userWord.join("") == word) {
-              setGameStatus((prev) => ({ ...prev, win: true }));
-            }
+          if (checkWordInList() == undefined) {
+            shakeScreen(e, "Not in word list! try another word");
+          } else {
+            setTimeout(() => {
+              if (userWord.join("") == word) {
+                setGameStatus((prev) => ({ ...prev, win: true }));
+              }
 
-            if (allWord.length == 5) {
-              setGameStatus((prev) => ({ ...prev, lose: true }));
-            }
-          }, 200);
+              if (allWord.length == 5) {
+                setGameStatus((prev) => ({ ...prev, lose: true }));
+              }
+            }, 200);
 
-          classHandler();
-          setAllWord((prev) => [...prev, userWord]);
-          setUserWord([]);
+            classHandler();
+            setAllWord((prev) => [...prev, userWord]);
+            setUserWord([]);
+          }
+        } else {
+          shakeScreen(e, "Not enough letters!");
         }
       } else if (e.key == "Backspace") {
         setUserWord((prev) =>
@@ -72,8 +87,25 @@ function App() {
         setUserWord((prev) => [...prev, e.key.toLowerCase()]);
       }
     },
-    [allWord.length, classHandler, userWord]
+    [allWord.length, checkWordInList, classHandler, userWord, word]
   );
+
+  const shakeScreen = (e: KeyboardEvent, errorText: string) => {
+    const targetElement = e.target as HTMLElement;
+    targetElement.classList.add("shakeScreen");
+
+    toast.error(errorText, {
+      style: {
+        borderRadius: "10px",
+        background: "#333",
+        color: "#fff",
+      },
+    });
+
+    setTimeout(() => {
+      targetElement.classList.remove("shakeScreen");
+    }, 200);
+  };
 
   useEffect(() => {
     !gameStatus.lose &&
@@ -84,7 +116,12 @@ function App() {
     };
   }, [gameStatus.lose, gameStatus.win, keyDownHandler]);
 
-  const filterWord = useCallback(
+  useEffect(() => {
+    console.log(`if you didn't know word then you can see word :)) ${word}`)
+  }, [word])
+  
+  
+  const writeWordCol = useCallback(
     (i: number) => {
       if (allWord.length == i) {
         return userWord;
@@ -98,6 +135,10 @@ function App() {
     [allWord, userWord]
   );
 
+  const changeTargetWord = () => {
+    setWordIndex(Math.floor(Math.random() * words.length));
+  };
+
   const resetHandler = () => {
     setGameStatus({
       win: false,
@@ -106,36 +147,37 @@ function App() {
     setAllWord([]);
     setUserWord([]);
     setClassName([]);
+    changeTargetWord();
   };
 
+  
   return (
-    <PageContainer>
-      <div className="flex flex-col items-center gap-[10vh]">
-        <header className="border-b-2 w-full p-2 border-neutral-700  text-center">
-          <h1 className="text-5xl font-bold text-[#cecccc]">WORDLE</h1>
-        </header>
+    <>
+      <Toaster position="top-center" reverseOrder={false} />
+      <PageContainer>
+        <div className="flex flex-col items-center gap-[10vh]">
+          <header className="border-b  w-full p-2 border-neutral-700  text-center">
+            <h1 className="text-4xl tracking-widest font-semibold text-[#d7dadc]">WORDLE</h1>
+          </header>
 
-        <div className="">
-          <h1 className="text-center  text-2xl mb-4 font-bold uppercase">
-            {word}
-          </h1>
-
-          {Array.from({ length: 6 }).map((_, i) => (
-            <WordleBox
-              key={i}
-              word={filterWord(i)}
-              className={className}
-              index={i}
-            />
-          ))}
+          <div>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <WordleBox
+                key={i}
+                index={i}
+                word={writeWordCol(i)}
+                className={className}
+              />
+            ))}
+          </div>
         </div>
-      </div>
-      {gameStatus.win ? (
-        <Celebrate onSubmit={resetHandler} />
-      ) : gameStatus.lose ? (
-        <Lose onSubmit={resetHandler} word={word} />
-      ) : null}
-    </PageContainer>
+        {gameStatus.win ? (
+          <Celebrate onSubmit={resetHandler} />
+        ) : gameStatus.lose ? (
+          <Lose onSubmit={resetHandler} word={word} />
+        ) : null}
+      </PageContainer>
+    </>
   );
 }
 

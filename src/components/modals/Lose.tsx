@@ -15,7 +15,7 @@ const Lose: React.FC<Props> = ({ onSubmit, word }) => {
     <ModalContainer>
       <div className="p-10 py-5  w-[500px] shadow-xl bg-[#1a1a1a] rounded-lg">
         <p className="text-center">
-          Oh no! 😢 You've lost the Wordle game! <br /> Word is {word.toUpperCase()}
+          Oh no! 😢 You've lost the Wordle game! <br /> Word is <span className="text-red-500 font-bold">{word.toUpperCase()}</span>
         </p>
         <button
           onClick={handleRestart}
