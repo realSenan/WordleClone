@@ -5,13 +5,14 @@ import Celebrate from "./components/modals/Celebrate";
 import Lose from "./components/modals/Lose";
 import { words } from "./data/words";
 import toast, { Toaster } from "react-hot-toast";
+import Keyboard from "./components/Keyboard";
 
 function App() {
   const [wordIndex, setWordIndex] = useState<number>(
     Math.floor(Math.random() * words.length)
   );
   const word: string = words[wordIndex];
-  const [userWord, setUserWord] = useState<Array<string>>([]);
+  const [userWord, setUserWord] = useState<Array<string | null>>([]);
   const [allWord, setAllWord] = useState<Array<Array<string>>>([]);
   const [className, setClassName] = useState<Array<Array<number>>>([]);
   const [gameStatus, setGameStatus] = useState({
@@ -25,7 +26,7 @@ function App() {
 
   const classHandler = useCallback(() => {
     const result: number[] = [];
-    const wordCharCounts: { [key: string]: number } = {};
+    const wordCharCounts: { [key: string]: number | undefined } = {};
 
     for (const char of word) {
       if (wordCharCounts[char]) {
@@ -39,12 +40,12 @@ function App() {
       const userChar = userWord[i];
       const wordChar = word[i];
 
-      if (userChar === wordChar && wordCharCounts[userChar] > 0) {
+      if (userChar === wordChar && wordCharCounts[userChar]! > 0) {
         result.push(1);
-        wordCharCounts[userChar]--;
-      } else if (word.includes(userChar) && wordCharCounts[userChar] > 0) {
+        wordCharCounts[userChar]!--;
+      } else if (word.includes(userChar!) && wordCharCounts[userChar!]! > 0) {
         result.push(2);
-        wordCharCounts[userChar]--;
+        wordCharCounts[userChar!]!--;
       } else {
         result.push(0);
       }
@@ -54,13 +55,20 @@ function App() {
   }, [userWord, word]);
 
   const keyDownHandler = useCallback(
-    (e: KeyboardEvent) => {
-      const isCleanWord = e.key.length === 1 && /^[a-zA-Z]+$/.test(e.key);
+    (c: KeyboardEvent | string) => {
+      let e: string;
+      if (typeof c === "string") {
+        e = c;
+      } else {
+        e = c.key;
+      }
 
-      if (e.key == "Enter" || e.key == " ") {
+      const isCleanWord = e?.length === 1 && /^[a-zA-Z]+$/.test(e);
+
+      if (e == "Enter" || e == " ") {
         if (userWord.length == 5) {
           if (checkWordInList() == undefined) {
-            shakeScreen(e, "Not in word list! try another word");
+            shakeScreen("Not in word list! try another word");
           } else {
             setTimeout(() => {
               if (userWord.join("") == word) {
@@ -73,26 +81,28 @@ function App() {
             }, 200);
 
             classHandler();
-            setAllWord((prev) => [...prev, userWord]);
+            setAllWord((prev) => [
+              ...prev,
+              userWord.map((word) => word || " "),
+            ]);
             setUserWord([]);
           }
         } else {
-          shakeScreen(e, "Not enough letters!");
+          shakeScreen("Not enough letters!");
         }
-      } else if (e.key == "Backspace") {
+      } else if (e == "Backspace" || e == "Back") {
         setUserWord((prev) =>
           prev.filter((word, i) => i != userWord.length - 1)
         );
       } else if (isCleanWord && userWord.length < 5) {
-        setUserWord((prev) => [...prev, e.key.toLowerCase()]);
+        setUserWord((prev) => [...prev, e.toLowerCase()]);
       }
     },
     [allWord.length, checkWordInList, classHandler, userWord, word]
   );
 
-  const shakeScreen = (e: KeyboardEvent, errorText: string) => {
-    const targetElement = e.target as HTMLElement;
-    targetElement.classList.add("shakeScreen");
+  const shakeScreen = (errorText: string) => {
+    document.body.classList.add("shakeScreen");
 
     toast.error(errorText, {
       style: {
@@ -103,7 +113,7 @@ function App() {
     });
 
     setTimeout(() => {
-      targetElement.classList.remove("shakeScreen");
+      document.body.classList.remove("shakeScreen");
     }, 200);
   };
 
@@ -117,10 +127,9 @@ function App() {
   }, [gameStatus.lose, gameStatus.win, keyDownHandler]);
 
   useEffect(() => {
-    console.log(`if you didn't know word then you can see word :)) ${word}`)
-  }, [word])
-  
-  
+    console.log(`if you didn't know word then you can see word :)) ${word}`);
+  }, [word]);
+
   const writeWordCol = useCallback(
     (i: number) => {
       if (allWord.length == i) {
@@ -150,14 +159,22 @@ function App() {
     changeTargetWord();
   };
 
-  
   return (
     <>
       <Toaster position="top-center" reverseOrder={false} />
       <PageContainer>
         <div className="flex flex-col items-center gap-[10vh]">
-          <header className="border-b  w-full p-2 border-neutral-700  text-center">
-            <h1 className="text-4xl tracking-widest font-semibold text-[#d7dadc]">WORDLE</h1>
+          <header className="border-b  w-full p-2 border-neutral-700  ">
+            <h1 className="text-4xl flex tracking-widest font-semibold text-[#d7dadc]">
+              <a
+                target="_blank"
+                href="https://github.com/realSenan"
+                className="flex-1"
+              >
+                SANAN
+              </a>{" "}
+              WORDLE GAME
+            </h1>
           </header>
 
           <div>
@@ -170,6 +187,13 @@ function App() {
               />
             ))}
           </div>
+
+          <Keyboard
+            words={allWord}
+            word={userWord.join("")}
+            onClick={keyDownHandler}
+            className={className}
+          />
         </div>
         {gameStatus.win ? (
           <Celebrate onSubmit={resetHandler} />

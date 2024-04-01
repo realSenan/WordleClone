@@ -1,7 +1,7 @@
 import React from "react";
 
 interface Wordle {
-  word: Array<string>;
+  word: Array<string | null>;
   index: number;
   className?: Array<Array<number>>;
 }
@@ -13,7 +13,7 @@ const WordleBox: React.FC<Wordle> = ({ word, className, index }) => {
         return (
           <div
             key={i}
-            className={`hover:bg-opacity-30  duration-200 grid place-content-center min-w-[70px] h-16 text-3xl font-bold uppercase  bg-[#242424] ${
+            className={`hover:bg-opacity-30 rounded-sm duration-200 grid place-content-center min-w-[70px] h-16 text-3xl font-bold uppercase  bg-[#242424] ${
               word[i] && "bg-opacity-60 animateScale border border-[#111010]"
             } ${
               className && className[index] && className[index][i] === 1
