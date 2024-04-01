@@ -64,14 +64,12 @@ const Keyboard: React.FC<Props> = ({ onClick, words, word, className }) => {
   return (
     <div ref={container}>
       {keyboard.map((letters, i) => (
-        <div key={i} className="mb-3  flex items-center justify-center gap-1 md:gap-3">
+        <div key={i} className="mb-3 flex items-center justify-center gap-1 rounded-md md:gap-3">
           {letters.map((letter, k) => (
-            <button
-              key={k}
-              onClick={() => handleClick(letter)}
-              className="rounded-md border max-xx:p-1 max-xx:px-2 p-[2.4vw] uppercase duration-300 active:scale-75 active:bg-[#afafaf] xs:p-3 md:min-w-11 md:p-4 lg:hover:bg-[#afafaf] "
-            >
-              {letter}
+            <button key={k} onClick={() => handleClick(letter)}>
+              <div className="h-full scale-100 rounded-md border p-[2.4vw] uppercase duration-300 active:scale-75 active:bg-[#afafaf] max-xx:p-1 max-xx:px-2 xs:p-3 md:min-w-11 md:p-4 lg:hover:bg-[#afafaf]">
+                {letter}
+              </div>
             </button>
           ))}
         </div>
