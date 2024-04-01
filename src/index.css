@@ -16,14 +16,17 @@
 }
 
 body {
-  @apply duration-300 overflow-x-hidden;
+  @apply overflow-x-hidden duration-300;
+}
+
+html {
+  @apply overflow-x-hidden;
 }
 
 .screenKeyboard {
   animation: rotate 0.3s;
   animation: Scales 0.3s;
 }
-
 
 .animateScale {
   animation: Scales 0.3s;
@@ -76,4 +79,3 @@ body {
     transform: scale(1);
   }
 }
-
