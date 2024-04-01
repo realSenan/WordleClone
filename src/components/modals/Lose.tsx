@@ -1,31 +1,30 @@
-import React from "react";
-import ModalContainer from "../containers/ModalContainer";
+import React from 'react'
+import ModalContainer from '../containers/ModalContainer'
 
 type Props = {
-  onSubmit: () => void;
-  word: string;
-};
+  onSubmit: () => void
+  word: string
+}
 
 const Lose: React.FC<Props> = ({ onSubmit, word }) => {
   const handleRestart = () => {
-    onSubmit();
-  };
+    onSubmit()
+  }
 
   return (
     <ModalContainer>
-      <div className="p-10 py-5  w-[500px] shadow-xl bg-[#1a1a1a] rounded-lg">
-        <p className="text-center">
-          Oh no! 😢 You've lost the Wordle game! <br /> Word is <span className="text-red-500 font-bold">{word.toUpperCase()}</span>
-        </p>
-        <button
-          onClick={handleRestart}
-          className="mt-4 px-4 w-full py-2 rounded-md bg-green-500 text-white hover:bg-[#2f9282] transition duration-300"
-        >
-          Restart
-        </button>
-      </div>
+      <p className="text-center">
+        Oh no! 😢 You've lost the Wordle game! <br /> Word is{' '}
+        <span className="font-bold text-red-500">{word.toUpperCase()}</span>
+      </p>
+      <button
+        onClick={handleRestart}
+        className="mt-4 w-full rounded-md bg-green-500 px-4 py-2 text-white transition duration-300 hover:bg-[#2f9282]"
+      >
+        Restart
+      </button>
     </ModalContainer>
-  );
-};
+  )
+}
 
-export default Lose;
+export default Lose

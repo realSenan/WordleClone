@@ -65,7 +65,7 @@ body {
 }
 
 .modalFade {
-  animation: modalFade 0.35s;
+  animation: modalFade 0.25s;
 }
 
 @keyframes modalFade {

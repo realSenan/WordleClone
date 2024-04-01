@@ -12,7 +12,7 @@ const Celebrate: React.FC<Props> = ({ onSubmit }) => {
 
   return (
     <ModalContainer>
-      <div className="p-10 py-5  w-[500px] shadow-xl bg-[#1a1a1a] rounded-lg">
+      {/* <div className="p-10 py-5  max-w-[500px] shadow-xl bg-[#1a1a1a] rounded-lg"> */}
         <p className="text-center">Congratulations! 🎉 You've completed the Wordle game!</p>
         <button
           onClick={handleRestart}
@@ -20,7 +20,7 @@ const Celebrate: React.FC<Props> = ({ onSubmit }) => {
         >
           Restart
         </button>
-      </div>
+      {/* </div> */}
     </ModalContainer>
   );
 };
